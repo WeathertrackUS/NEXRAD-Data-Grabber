@@ -9,6 +9,7 @@ The application is initialized with the CustomTkinter appearance mode set to "Sy
 """
 # NEXRAD File Grabber Frontend
 import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main, os
+from CTkScrollableDropdown import *
 
 log_directory = 'C:\\log'
 
@@ -48,8 +49,8 @@ path_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10)
 input_frame = customtkinter.CTkFrame(master=root)
 input_frame.grid(row=1, column=0, pady=20, padx=60)
 
-output_frame = customtkinter.CTkScrollableFrame(master=root)
-output_frame.grid(row=2, column=0, pady=20, padx=60)
+output_frame = customtkinter.CTkScrollableFrame(master=root, width=230)
+output_frame.grid(row=2, column=0, pady=10, padx=10, columnspan=3)
 
 # Functions
 
@@ -81,7 +82,8 @@ def update_radars():
     day = day_dropdown.get()
     radar_dropdown['values'] = [] # Clear the current values
     available_radars = questions.get_available_radars(year, month, day)
-    radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=available_radars)
+    radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar Site'] + available_radars)
+    CTkScrollableDropdown(radar_dropdown, values=available_radars)
     radar_label.grid(row=3, column=0, padx=10, pady=10)
     radar_dropdown.grid(row=3, column=1, padx=10, pady=10)
     radar_button.grid(row=3, column=2, padx=10, pady=10)
@@ -92,13 +94,16 @@ def generate_time_list():
     for hour in range(24):
         for minute in range(0, 60, 15): # Start at 0, end at 60, step by 15
             time_list.append(f"{hour:02d}{minute:02d}") # Format as 'HHMM'
+    time_list.append('2359')
     return time_list
 
 def time_range_selection():
     global start_time_dropdown, end_time_dropdown
     time_list = generate_time_list()
-    start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=time_list)
-    end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=time_list)
+    start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Start Time'])
+    CTkScrollableDropdown(start_time_dropdown, values=time_list)
+    end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select End Time'])
+    CTkScrollableDropdown(end_time_dropdown, values=time_list)
     start_time_label.grid(row=4, column=0, padx=10, pady=10)
     start_time_dropdown.grid(row=4, column=1, padx=10, pady=10)
     end_time_label.grid(row=5, column=0, padx=10, pady=10)
@@ -143,35 +148,35 @@ def find_scans():
 
         # Create a label to indicate the format of the output
         format_label = customtkinter.CTkLabel(master=output_frame, text="Index: File Name", wraplength=600)
-        format_label.grid(row=0, column=0, padx=10, pady=10)
+        format_label.grid(row=0, column=1, padx=10, pady=10)
         
         # Display the output_text
         output_label = customtkinter.CTkLabel(master=output_frame, text=output_text, wraplength=600)
-        output_label.grid(row=1, column=0, padx=10, pady=10)
+        output_label.grid(row=1, column=1, padx=10, pady=10)
         
         # Create a text box for the user to input the indexes
         index_input = customtkinter.CTkEntry(master=output_frame)
-        index_input.grid(row=2, column=0, padx=10, pady=10)
+        index_input.grid(row=2, column=1, padx=10, pady=10)
         
         # Create a button to trigger the download process
         download_button = customtkinter.CTkButton(master=output_frame, text="Download Selected Scans", command=lambda: download_scans(index_input.get(), available_scans))
-        download_button.grid(row=3, column=0, padx=10, pady=10)
+        download_button.grid(row=3, column=1, padx=10, pady=10)
     else:
         output_label = customtkinter.CTkLabel(master=output_frame, text="No available scans found for the selected criteria.", wraplength=600)
-        output_label.grid(row=0, column=0, padx=10, pady=10)
+        output_label.grid(row=0, column=1, padx=10, pady=10)
 
 def start_download():
     progress_bar.set(0)
     progress_bar.start()
     status_label = customtkinter.CTkLabel(master=output_frame, text="Downloading Files...")
-    status_label.grid(row=4, column=0, padx=10, pady=10)
-    progress_bar.grid(row=5, column=0, padx=10, pady=10)
+    status_label.grid(row=4, column=1, padx=10, pady=10)
+    progress_bar.grid(row=5, column=1, padx=10, pady=10)
 
 def download_complete():
     progress_bar.stop()
     progress_bar.grid_remove()
     status_label = customtkinter.CTkLabel(master=output_frame, text="Download Complete!")
-    status_label.grid(row=4, column=0, padx=10, pady=10)
+    status_label.grid(row=4, column=1, padx=10, pady=10)
 
 def download_scans(indexes, scans):
     log.info('Starting Download')
