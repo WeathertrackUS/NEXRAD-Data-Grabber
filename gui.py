@@ -162,16 +162,16 @@ def find_scans():
 
 def start_download():
     progress_bar.set(0)
-    status_label = customtkinter.CTkLabel(master=output_frame, text="Downloading files...")
+    progress_bar.start()
+    status_label = customtkinter.CTkLabel(master=output_frame, text="Downloading Files...")
     status_label.grid(row=4, column=0, padx=10, pady=10)
     progress_bar.grid(row=5, column=0, padx=10, pady=10)
-    progress_bar.start()
 
 def download_complete():
     progress_bar.stop()
     progress_bar.grid_remove()
-    complete_label = customtkinter.CTkLabel(master=output_frame, text="Download Complete!")
-    complete_label.grid(row=4, column=0, padx=10, pady=10)
+    status_label = customtkinter.CTkLabel(master=output_frame, text="Download Complete!")
+    status_label.grid(row=4, column=0, padx=10, pady=10)
 
 def download_scans(indexes, scans):
     log.info('Starting Download')
@@ -263,6 +263,8 @@ find_scans_button.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
 output_label = customtkinter.CTkLabel(master=output_frame, text="", wraplength=600)
 
 progress_bar = customtkinter.CTkProgressBar(master=output_frame, determinate_speed=0.5)
+
+status_label = customtkinter.CTkLabel(master=output_frame)
 
 
 root.mainloop()

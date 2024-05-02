@@ -65,5 +65,6 @@ class NexradDownloader:
         conn.download(scan, self.path)
         log.info('Download Complete')
         log.info(f'File can be found at: {self.path}')
+        time.sleep(2)
         download_complete_callback() # Call the download_complete function
 
