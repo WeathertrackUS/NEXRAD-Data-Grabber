@@ -1,8 +1,6 @@
 # NEXRAD-Data-Grabber
 A simple program using the nexradaws module to retrieve NEXRAD L2 data from the AWS S3 which houses the data from NOAA/ NWS.
 
-### This program is in Active Development and is NOT finished
-
 ## Requirements
 ### Installer
 - Program installed via the installer
