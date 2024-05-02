@@ -3,15 +3,20 @@
 
 import nexradaws, datetime, logging as log, os, time
 
-log.basicConfig(
-    filename='D:/Programming Projects/Weather/NEXRAD File Grabber/nexrad_downloader.log', 
-    level=log.INFO, 
-    format='%(asctime)s %(levelname)s: %(message)s', 
-    datefmt='%Y-%m-%d %H:%M:%S')
-
-
 conn = conn = nexradaws.NexradAwsInterface()
-path = 'D:/Programming Projects/Weather/NEXRAD File Grabber/NEXRAD Files'
+path = os.path.dirname(os.path.abspath(__file__))
+
+log_directory = 'C:\\log'
+
+if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+    
+log.basicConfig(
+    level = log.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename=os.path.join(log_directory, 'Nexrad_Downloader.log'),
+    filemode='w'
+)
 
 class Question:
     def __init__(self):
@@ -52,14 +57,13 @@ class NexradDownloader:
         return scan_list
 
     def download_scans(self, scan, start_download_callback, download_complete_callback):
-        if self.path == 'D:/Programming Projects/Weather/NEXRAD File Grabber/NEXRAD Files':
+        if self.path == os.path.dirname(os.path.abspath(__file__)):
             if not os.path.exists(self.path):
                 os.makedirs(self.path)
         log.info(f'Downloading NEXRAD scan: {scan.filename}')
         start_download_callback() # Call the start_download function
         conn.download(scan, self.path)
         log.info('Download Complete')
-        if self.path == 'D:/Programming Projects/Weather/NEXRAD File Grabber/NEXRAD Files':
-            print('File can be found at: ', self.path)
+        log.info(f'File can be found at: {self.path}')
         download_complete_callback() # Call the download_complete function
 

@@ -8,17 +8,19 @@ The GUI consists of two frames: an input frame and an output frame. The input fr
 The application is initialized with the CustomTkinter appearance mode set to "System" and the default color theme set to "blue". The main window is set to a size of 800x600 pixels and titled "NEXRAD Downloader".
 """
 # NEXRAD File Grabber Frontend
-import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main
+import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main, os
 
-# Clear the log file
-with open('D:/Programming Projects/Weather/NEXRAD File Grabber/nexrad_downloader.log', 'w'):
-    pass
+log_directory = 'C:\\log'
 
+if not os.path.exists(log_directory):
+        os.makedirs(log_directory)
+    
 log.basicConfig(
-    filename='D:/Programming Projects/Weather/NEXRAD File Grabber/nexrad_downloader.log', 
-    level=log.INFO, 
-    format='%(asctime)s %(levelname)s: %(message)s', 
-    datefmt='%Y-%m-%d %H:%M:%S')
+    level = log.INFO,
+    format='%(asctime)s - %(levelname)s - %(message)s',
+    filename=os.path.join(log_directory, 'Nexrad_Downloader.log'),
+    filemode='w'
+)
 
 def update_download_path(path):
     # This function will be called with the new download path
