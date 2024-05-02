@@ -6,9 +6,12 @@ A simple program using the nexradaws module to retrieve NEXRAD L2 data from the 
 ## Features
 - Retrieve and Download NEXRAD L2 data from AWS S3 based on a specified date, time, and radar site
 
+## Important Use Notice
+- When selecting indexes related to scans **ONLY** enter the numbers you would like to use and no extra characters like spaces (' '), commas (','), or any other separator. This will break the program.
+
 ## Installation and Use
 - Download and adjust the Source Code for your needs
-- (Coming Soon) Installer in the Releases Section
+- Installer in the Releases Section
 
 ## License
 This program is licensed under the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication. To view a copy of this license, visit https://creativecommons.org/publicdomain/zero/1.0/
