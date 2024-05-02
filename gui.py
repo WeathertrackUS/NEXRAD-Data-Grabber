@@ -20,7 +20,13 @@ log.basicConfig(
     format='%(asctime)s %(levelname)s: %(message)s', 
     datefmt='%Y-%m-%d %H:%M:%S')
 
-downloader = main.NexradDownloader()
+def update_download_path(path):
+    # This function will be called with the new download path
+    # You can update the GUI or perform other actions here
+    print(f"Download path set to: {path}")
+
+
+downloader = main.NexradDownloader(update_download_path)
 questions = main.Question()
 
 customtkinter.set_appearance_mode("System")
@@ -34,13 +40,17 @@ available_months = []
 selection_text = ['Select Year First', 'Select Month First', 'Select Day First', 'Select Radar Site First']
 
 # Frames
+path_frame = customtkinter.CTkFrame(master=root)
+path_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10)
+
 input_frame = customtkinter.CTkFrame(master=root)
-input_frame.grid(row=0, column=0, pady=20, padx=60)
+input_frame.grid(row=1, column=0, pady=20, padx=60)
 
 output_frame = customtkinter.CTkFrame(master=root)
-output_frame.grid(row=1, column=0, pady=20, padx=60)
+output_frame.grid(row=2, column=0, pady=20, padx=60)
 
 # Functions
+
 def update_months():
     global month_dropdown
     year = year_dropdown.get()
@@ -120,8 +130,6 @@ def find_scans():
     start = datetime.datetime(int(year), int(month), int(day), int(start_time[:2]), int(start_time[2:]))
     end = datetime.datetime(int(year), int(month), int(day), int(end_time[:2]), int(end_time[2:]))
 
-    log.info(start, end, radar_site)
-
     available_scans = downloader.find_scans(start, end, radar_site)
 
     if available_scans:
@@ -185,49 +193,71 @@ def download_scans(indexes, scans):
         download_thread = threading.Thread(target=downloader.download_scans, args=(scan, start_download, download_complete))
         download_thread.start()
 
+# Path Frame
+# Output Path Selection
+output_path_label = customtkinter.CTkLabel(master=path_frame, text="Output Path:")
+output_path_label.grid(row=0, column=0, padx=10, pady=10)
+
+output_path_entry = customtkinter.CTkEntry(master=path_frame)
+output_path_entry.grid(row=0, column=1, padx=10, pady=10)
+
+# Browse Button for Output Path
+def browse_output_path():
+    from tkinter import filedialog
+    path = filedialog.askdirectory()
+    if path:
+        output_path_entry.delete(0, 'end')
+        output_path_entry.insert(0, path)
+        downloader.set_download_path(path) # Update the download path
+
+browse_button = customtkinter.CTkButton(master=path_frame, text="Browse", command=browse_output_path)
+browse_button.grid(row=0, column=2, padx=10, pady=10)
     
-# Labels and Dropdown Menus
+# Input Frame
 year_label = customtkinter.CTkLabel(master=input_frame, text="Select Year:")
 year_label.grid(row=0, column=0, padx=10, pady=10)
-year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=questions.get_available_years())
+year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=questions.get_available_years()) 
 year_dropdown.grid(row=0, column=1, padx=10, pady=10)
-year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=lambda: update_months())
+
+year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=lambda: update_months()) 
 year_button.grid(row=0, column=2, padx=10, pady=10)
 
 month_label = customtkinter.CTkLabel(master=input_frame, text="Select Month:")
 month_label.grid(row=1, column=0, padx=10, pady=10)
-month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Year First"])
+month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Year First"]) 
 month_dropdown.grid(row=1, column=1, padx=10, pady=10)
-month_button = customtkinter.CTkButton(master=input_frame, text="Select Month", command=lambda: update_days())
+month_button = customtkinter.CTkButton(master=input_frame, text="Select Month", command=lambda: update_days()) 
 month_button.grid(row=1, column=2, padx=10, pady=10)
 
 day_label = customtkinter.CTkLabel(master=input_frame, text="Select Day:")
 day_label.grid(row=2, column=0, padx=10, pady=10)
-day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Month First"])
+day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Month First"]) 
 day_dropdown.grid(row=2, column=1, padx=10, pady=10)
-day_buttion = customtkinter.CTkButton(master=input_frame, text="Select Day", command=lambda: update_radars())
+day_buttion = customtkinter.CTkButton(master=input_frame, text="Select Day", command=lambda: update_radars()) 
 day_buttion.grid(row=2, column=2, padx=10, pady=10)
 
 radar_label = customtkinter.CTkLabel(master=input_frame, text="Select Radar:")
 radar_label.grid(row=3, column=0, padx=10, pady=10)
-radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Day First"])
+radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Day First"]) 
 radar_dropdown.grid(row=3, column=1, padx=10, pady=10)
-radar_button = customtkinter.CTkButton(master=input_frame, text="Select Radar", command=lambda: time_range_selection())
+radar_button = customtkinter.CTkButton(master=input_frame, text="Select Radar", command=lambda: time_range_selection()) 
 radar_button.grid(row=3, column=2, padx=10, pady=10)
 
 start_time_label = customtkinter.CTkLabel(master=input_frame, text="Start Time:")
 start_time_label.grid(row=4, column=0, padx=10, pady=10)
-start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar First'])
+start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar First']) 
 start_time_dropdown.grid(row=4, column=1, padx=10, pady=10)
 
 end_time_label = customtkinter.CTkLabel(master=input_frame, text="End Time:")
 end_time_label.grid(row=5, column=0, padx=10, pady=10)
-end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar First'])
+end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar First']) 
 end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
-find_scans_button = customtkinter.CTkButton(master=input_frame, text="Find Scans", command=lambda: find_scans())
+find_scans_button = customtkinter.CTkButton(master=input_frame, text="Find Scans", command=lambda: find_scans()) 
 find_scans_button.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
 
+
+# Output Frame
 output_label = customtkinter.CTkLabel(master=output_frame, text="", wraplength=600)
 
 progress_bar = customtkinter.CTkProgressBar(master=output_frame, determinate_speed=0.5)

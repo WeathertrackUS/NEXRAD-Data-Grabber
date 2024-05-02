@@ -35,9 +35,15 @@ class Question:
         return start, end
 
 class NexradDownloader:
-    def __init__(self):
+    def __init__(self, set_path_callback):
         self.conn = conn
-        self.path = path
+        self.path = path # Initialize path as None
+        self.set_path_callback = set_path_callback # Store the callback
+
+    def set_download_path(self, path):
+        self.path = path # Set the download path
+        if self.set_path_callback:
+            self.set_path_callback(path) # Call the callback with the new path
 
     def find_scans(self, start, end, radar):
         log.info(f'Searching for NEXRAD scans for {radar} from {start} to {end}')
@@ -46,9 +52,14 @@ class NexradDownloader:
         return scan_list
 
     def download_scans(self, scan, start_download_callback, download_complete_callback):
+        if self.path == 'D:/Programming Projects/Weather/NEXRAD File Grabber/NEXRAD Files':
+            if not os.path.exists(self.path):
+                os.makedirs(self.path)
         log.info(f'Downloading NEXRAD scan: {scan.filename}')
         start_download_callback() # Call the start_download function
         conn.download(scan, self.path)
         log.info('Download Complete')
+        if self.path == 'D:/Programming Projects/Weather/NEXRAD File Grabber/NEXRAD Files':
+            print('File can be found at: ', self.path)
         download_complete_callback() # Call the download_complete function
 
