@@ -48,7 +48,7 @@ path_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10)
 input_frame = customtkinter.CTkFrame(master=root)
 input_frame.grid(row=1, column=0, pady=20, padx=60)
 
-output_frame = customtkinter.CTkFrame(master=root)
+output_frame = customtkinter.CTkScrollableFrame(master=root)
 output_frame.grid(row=2, column=0, pady=20, padx=60)
 
 # Functions
