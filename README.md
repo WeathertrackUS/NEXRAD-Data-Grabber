@@ -15,8 +15,8 @@ A simple program using the nexradaws module to retrieve NEXRAD L2 data from the 
 - logging
 - customtkinter
 - threading
-### Python 3.12.X
-### Consistant Internet Connection
+#### Python 3.12.X
+#### Consistant Internet Connection
 
 ## Features
 - Retrieve and Download NEXRAD L2 data from AWS S3 based on a specified date, time, and radar site
