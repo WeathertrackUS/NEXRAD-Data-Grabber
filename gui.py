@@ -8,7 +8,7 @@ The GUI consists of two frames: an input frame and an output frame. The input fr
 The application is initialized with the CustomTkinter appearance mode set to "System" and the default color theme set to "blue". The main window is set to a size of 800x600 pixels and titled "NEXRAD Downloader".
 """
 # NEXRAD File Grabber Frontend
-import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main, os
+import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main, os, concurrent.futures
 from CTkScrollableDropdown import *
 
 log_directory = 'C:\\log'
@@ -42,6 +42,9 @@ root.title("NEXRAD Downloader")
 available_months = []
 selection_text = ['Select Year First', 'Select Month First', 'Select Day First', 'Select Radar Site First']
 
+# Create a global event object
+download_event = threading.Event()
+
 # Frames
 path_frame = customtkinter.CTkFrame(master=root)
 path_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10)
@@ -51,6 +54,9 @@ input_frame.grid(row=1, column=0, pady=20, padx=60)
 
 output_frame = customtkinter.CTkScrollableFrame(master=root, width=230)
 output_frame.grid(row=2, column=0, pady=10, padx=10, columnspan=3)
+
+status_frame = customtkinter.CTkFrame(master=root, width=250, height=45)
+status_frame.grid(row=3, column=0, pady=10, padx=10, columnspan=3)
 
 # Functions
 
@@ -120,18 +126,28 @@ def find_scans():
 
     if not year:
         log.error(selection_text[0])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[0])
+        status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not month:
         log.error(selection_text[1])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[1])
+        status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not day:
         log.error(selection_text[2])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[2])
+        status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not radar_site:
         log.error(selection_text[3])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[3])
+        status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not start_time or not end_time:
         log.error("Select Start/ End Time First")
+        status_label = customtkinter.CTkLabel(master=status_frame, text="Select Start/ End Time First")
+        status_label.grid(row=0, column=0, padx=10, pady=10)
         return
 
     start = datetime.datetime(int(year), int(month), int(day), int(start_time[:2]), int(start_time[2:]))
@@ -141,7 +157,8 @@ def find_scans():
 
     if available_scans:
         # Convert each AwsNexradFile object to a string representation with index
-        scan_strings = [f"{i}: {scan.filename}" for i, scan in enumerate(available_scans, start=0)]
+        scan_strings = [f"{i}: {scan.filename}" for i, scan in enumerate(available_scans, start=1)]
+        scan_strings.insert(0, "0: Select All") # Add "Select All" at the beginning
         
         # Join the list of strings into a single string
         output_text = "\n".join(scan_strings)
@@ -167,38 +184,62 @@ def find_scans():
 
 def start_download():
     progress_bar.set(0)
+    status_label = customtkinter.CTkLabel(master=status_frame, text="Downloading Files...")
+    status_label.grid(row=0, column=0, padx=10, pady=10)
+    progress_bar.grid(row=2, column=0, padx=10, pady=10)
+
+    # Create a separate thread for updating the progress bar
+    progress_thread = threading.Thread(target=update_progress_bar)
+    progress_thread.start()
+
+def update_progress_bar():
     progress_bar.start()
-    status_label = customtkinter.CTkLabel(master=output_frame, text="Downloading Files...")
-    status_label.grid(row=4, column=1, padx=10, pady=10)
-    progress_bar.grid(row=5, column=1, padx=10, pady=10)
 
-def download_complete():
-    progress_bar.stop()
-    progress_bar.grid_remove()
-    status_label = customtkinter.CTkLabel(master=output_frame, text="Download Complete!")
-    status_label.grid(row=4, column=1, padx=10, pady=10)
-
-def download_scans(indexes, scans):
+def download_scans(indexes, available_scans):
     log.info('Starting Download')
     
-    # Convert the indexes string to a list of integers
-    selected_indexes = [int(index) for index in indexes]
+    start_download()
+
+    # Reset the download_event
+    download_event.clear()
+
+    # Check if "Select All" is selected
+    print(indexes)
+    if indexes == '0':
+        selected_scans = available_scans
+    else:
+        # Assuming indexes is a string of comma-separated integers
+        selected_indexes = [int(index) for index in indexes.split(',')]
+        selected_scans = [scan for i, scan in enumerate(available_scans, start=1) if i in selected_indexes]
     
-    # Check if all selected indexes are valid for the scans list
-    if max(selected_indexes) >= len(scans):
-        log.error("Error: One or more selected indexes are out of range.")
-        return
-    
-    # Filter the scans based on the selected indexes
-    selected_scans = [scan for i, scan in enumerate(scans, start=0) if i in selected_indexes]
-    
-    # Trigger the download process for the selected scans in a separate thread
-    log.info('Downloading')
-    for scan in selected_scans:
-        log.info(f"Downloading scan: {scan.filename} from {radar_dropdown.get()}")
-        # Create a new thread for each download
-        download_thread = threading.Thread(target=downloader.download_scans, args=(scan, start_download, download_complete))
-        download_thread.start()
+    log.info(selected_scans)
+    if len(selected_scans) != 0:
+        # Trigger the download process for the selected scans in a separate thread
+        log.info('Downloading')
+
+        total_scans = len(selected_scans)
+
+        for scan in selected_scans:
+            log.info(f"Downloading scan: {scan.filename} from {radar_dropdown.get()}")
+            # Create a new thread for each download
+            download_thread = threading.Thread(target=downloader.download_scans, args=([scan], download_event, download_complete, total_scans))
+            download_thread.start()
+
+            time.sleep(2) # Delay to prevent overload
+
+
+    else:
+        print('test3')
+        status_label = customtkinter.CTkLabel(master=status_frame, text="ERROR: selected_scans is empty")
+        status_label.grid(row=0, column=0, padx=10, pady=10)
+        log.error('Selected Scans is None')
+
+def download_complete(event):
+    if event.is_set():
+        progress_bar.stop()
+        progress_bar.grid_remove()
+        status_label = customtkinter.CTkLabel(master=status_frame, text="Download Complete!")
+        status_label.grid(row=0, column=0, padx=10, pady=10)
 
 # Path Frame
 # Output Path Selection
@@ -261,13 +302,13 @@ end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Selec
 end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
 find_scans_button = customtkinter.CTkButton(master=input_frame, text="Find Scans", command=lambda: find_scans()) 
-find_scans_button.grid(row=6, column=0, columnspan=2, padx=10, pady=10)
+find_scans_button.grid(row=6, column=0, columnspan=3, padx=50, pady=10)
 
 
 # Output Frame
 output_label = customtkinter.CTkLabel(master=output_frame, text="", wraplength=600)
 
-progress_bar = customtkinter.CTkProgressBar(master=output_frame, determinate_speed=0.5)
+progress_bar = customtkinter.CTkProgressBar(master=status_frame, determinate_speed=0.5)
 
 status_label = customtkinter.CTkLabel(master=output_frame)
 

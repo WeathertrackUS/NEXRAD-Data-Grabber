@@ -56,15 +56,24 @@ class NexradDownloader:
         log.info(f'Scan List: {scan_list}')
         return scan_list
 
-    def download_scans(self, scan, start_download_callback, download_complete_callback):
+    def download_scans(self, scans, download_event, download_complete_callback, total_downloads):
+        self.completed_downloads = 0
+        
         if self.path == os.path.dirname(os.path.abspath(__file__)):
             if not os.path.exists(self.path):
                 os.makedirs(self.path)
-        log.info(f'Downloading NEXRAD scan: {scan.filename}')
-        start_download_callback() # Call the start_download function
-        conn.download(scan, self.path)
-        log.info('Download Complete')
-        log.info(f'File can be found at: {self.path}')
-        time.sleep(2)
-        download_complete_callback() # Call the download_complete function
+        
+        for scan in scans:
+            log.info(f'Downloading NEXRAD scan: {scan.filename}')
+            conn.download(scan, self.path)
+            log.info('Download Complete')
+            log.info(f'File can be found at: {self.path}')
+            self.completed_downloads += 1
+            self.download_progress = self.completed_downloads / total_downloads
+            
+        # Set the download_event when all downloads are complete
+        if self.completed_downloads == total_downloads:
+            print(f"completed scans {self.completed_downloads}/{total_downloads}")
+            download_event.set()
+            download_complete_callback(download_event)
 
