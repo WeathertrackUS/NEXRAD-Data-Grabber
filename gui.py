@@ -116,7 +116,7 @@ def time_range_selection():
     end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
 def find_scans():
-    output_label = customtkinter.CTkLabel(master=output_frame, text="Finding Files...")
+    output_label = customtkinter.CTkLabel(master=output_frame, text="")
     year = year_dropdown.get()
     month = month_dropdown.get()
     day = day_dropdown.get()
@@ -176,35 +176,34 @@ def find_scans():
         index_input.grid(row=2, column=1, padx=10, pady=10)
         
         # Create a button to trigger the download process
-        download_button = customtkinter.CTkButton(master=output_frame, text="Download Selected Scans", command=lambda: download_scans(index_input.get(), available_scans))
+        download_button = customtkinter.CTkButton(master=output_frame, text="Download Selected Scans", command=lambda: start_download_thread(index_input.get(), available_scans))
         download_button.grid(row=3, column=1, padx=10, pady=10)
     else:
         output_label = customtkinter.CTkLabel(master=output_frame, text="No available scans found for the selected criteria.", wraplength=600)
         output_label.grid(row=0, column=1, padx=10, pady=10)
 
 def start_download():
+    status_label_2.grid_remove() 
     progress_bar.set(0)
     status_label = customtkinter.CTkLabel(master=status_frame, text="Downloading Files...")
     status_label.grid(row=0, column=0, padx=10, pady=10)
     progress_bar.grid(row=2, column=0, padx=10, pady=10)
 
-    # Create a separate thread for updating the progress bar
-    progress_thread = threading.Thread(target=update_progress_bar)
-    progress_thread.start()
+def update_progress_bar(progress):
+    progress_bar.set(progress)
 
-def update_progress_bar():
-    progress_bar.start()
+def start_download_thread(indexes, available_scans):
+    download_thread = threading.Thread(target=download_scans, args=(indexes, available_scans))
+    download_thread.start()
 
 def download_scans(indexes, available_scans):
     log.info('Starting Download')
-    
     start_download()
 
     # Reset the download_event
     download_event.clear()
 
     # Check if "Select All" is selected
-    print(indexes)
     if indexes == '0':
         selected_scans = available_scans
     else:
@@ -216,30 +215,21 @@ def download_scans(indexes, available_scans):
     if len(selected_scans) != 0:
         # Trigger the download process for the selected scans in a separate thread
         log.info('Downloading')
-
         total_scans = len(selected_scans)
-
-        for scan in selected_scans:
-            log.info(f"Downloading scan: {scan.filename} from {radar_dropdown.get()}")
-            # Create a new thread for each download
-            download_thread = threading.Thread(target=downloader.download_scans, args=([scan], download_event, download_complete, total_scans))
-            download_thread.start()
-
-            time.sleep(2) # Delay to prevent overload
-
-
+        downloader.download_scans(selected_scans, download_event, download_complete, total_scans, update_progress_bar)
     else:
-        print('test3')
         status_label = customtkinter.CTkLabel(master=status_frame, text="ERROR: selected_scans is empty")
         status_label.grid(row=0, column=0, padx=10, pady=10)
         log.error('Selected Scans is None')
 
-def download_complete(event):
+def download_complete(event, total_scans):
     if event.is_set():
         progress_bar.stop()
         progress_bar.grid_remove()
         status_label = customtkinter.CTkLabel(master=status_frame, text="Download Complete!")
+        status_label_2 = customtkinter.CTkLabel(master=status_frame, text=f"Completed {total_scans} downloads")
         status_label.grid(row=0, column=0, padx=10, pady=10)
+        status_label_2.grid(row=1, column=0, padx=10, pady=10)
 
 # Path Frame
 # Output Path Selection
@@ -311,6 +301,8 @@ output_label = customtkinter.CTkLabel(master=output_frame, text="", wraplength=6
 progress_bar = customtkinter.CTkProgressBar(master=status_frame, determinate_speed=0.5)
 
 status_label = customtkinter.CTkLabel(master=output_frame)
+
+status_label_2 = customtkinter.CTkLabel(master=output_frame)
 
 
 root.mainloop()
