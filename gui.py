@@ -36,7 +36,7 @@ customtkinter.set_appearance_mode("System")
 customtkinter.set_default_color_theme("blue")
 
 root = customtkinter.CTk()
-root.geometry("550x800")
+root.geometry("540x800")
 root.title("NEXRAD Downloader")
 
 available_months = []
@@ -47,16 +47,19 @@ download_event = threading.Event()
 
 # Frames
 path_frame = customtkinter.CTkFrame(master=root)
-path_frame.grid(row=0, column=0, columnspan=3, pady=10, padx=10)
+path_frame.grid(row=0, column=0, pady=10, padx=10, columnspan=2)
 
 input_frame = customtkinter.CTkFrame(master=root)
-input_frame.grid(row=1, column=0, pady=20, padx=60)
+input_frame.grid(row=1, column=0, pady=20, padx=60, columnspan=2)
 
 output_frame = customtkinter.CTkScrollableFrame(master=root, width=230)
-output_frame.grid(row=2, column=0, pady=10, padx=10, columnspan=3)
+output_frame.grid(row=2, column=0, pady=10, padx=10)
 
-status_frame = customtkinter.CTkFrame(master=root, width=250, height=45)
-status_frame.grid(row=3, column=0, pady=10, padx=10, columnspan=3)
+output_frame_2 = customtkinter.CTkFrame(master=root, width=230)
+output_frame_2.grid(row=2, column=1, pady=10, padx=10)
+
+status_frame = customtkinter.CTkFrame(master=root, width=510, height=45)
+status_frame.grid(row=3, column=0, pady=10, padx=10, columnspan=2)
 
 # Functions
 
@@ -65,7 +68,8 @@ def update_months():
     year = year_dropdown.get()
     month_dropdown['values'] = [] # Clear the current values
     available_months = questions.get_available_months(year)
-    month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=available_months)
+    month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Month'] + available_months)
+    CTkScrollableDropdown(month_dropdown, values=available_months)
     month_label.grid(row=1, column=0, padx=10, pady=10)
     month_dropdown.grid(row=1, column=1, padx=10, pady=10)
     month_button.grid(row=1, column=2, padx=10, pady=10)
@@ -76,7 +80,8 @@ def update_days():
     month = month_dropdown.get()
     day_dropdown['values'] = [] # Clear the current values
     available_days = questions.get_available_days(year, month)
-    day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=available_days)
+    day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Day'] + available_days)
+    CTkScrollableDropdown(day_dropdown, values=available_days)
     day_label.grid(row=2, column=0, padx=10, pady=10)
     day_dropdown.grid(row=2, column=1, padx=10, pady=10)
     day_buttion.grid(row=2, column=2, padx=10, pady=10)
@@ -172,12 +177,12 @@ def find_scans():
         output_label.grid(row=1, column=1, padx=10, pady=10)
         
         # Create a text box for the user to input the indexes
-        index_input = customtkinter.CTkEntry(master=output_frame)
-        index_input.grid(row=2, column=1, padx=10, pady=10)
+        index_input = customtkinter.CTkEntry(master=output_frame_2)
+        index_input.grid(row=1, column=1, padx=10, pady=10)
         
         # Create a button to trigger the download process
-        download_button = customtkinter.CTkButton(master=output_frame, text="Download Selected Scans", command=lambda: start_download_thread(index_input.get(), available_scans))
-        download_button.grid(row=3, column=1, padx=10, pady=10)
+        download_button = customtkinter.CTkButton(master=output_frame_2, text="Download Selected Scans", command=lambda: start_download_thread(index_input.get(), available_scans))
+        download_button.grid(row=2, column=1, padx=10, pady=10)
     else:
         output_label = customtkinter.CTkLabel(master=output_frame, text="No available scans found for the selected criteria.", wraplength=600)
         output_label.grid(row=0, column=1, padx=10, pady=10)
@@ -254,7 +259,8 @@ browse_button.grid(row=0, column=2, padx=10, pady=10)
 # Input Frame
 year_label = customtkinter.CTkLabel(master=input_frame, text="Select Year:")
 year_label.grid(row=0, column=0, padx=10, pady=10)
-year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=questions.get_available_years()) 
+year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Year'] + questions.get_available_years())
+CTkScrollableDropdown(year_dropdown, values=questions.get_available_years())
 year_dropdown.grid(row=0, column=1, padx=10, pady=10)
 
 year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=lambda: update_months()) 
