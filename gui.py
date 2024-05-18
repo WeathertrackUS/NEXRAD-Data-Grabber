@@ -121,7 +121,9 @@ def time_range_selection():
     end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
 def find_scans():
-    output_label = customtkinter.CTkLabel(master=output_frame, text="")
+    output_label.grid_remove()
+    output_label.grid_forget()
+
     year = year_dropdown.get()
     month = month_dropdown.get()
     day = day_dropdown.get()
@@ -160,10 +162,20 @@ def find_scans():
 
     available_scans = downloader.find_scans(start, end, radar_site)
 
+    scan_strings = []
+
     if available_scans:
-        # Convert each AwsNexradFile object to a string representation with index
-        scan_strings = [f"{i}: {scan.filename}" for i, scan in enumerate(available_scans, start=1)]
-        scan_strings.insert(0, "0: Select All") # Add "Select All" at the beginning
+        # Clear the scan_strings list before generating the new list
+        scan_strings.clear()
+
+        output_label.configure(text="")
+
+        # Add "0: Select All" to the beginning of the list
+        scan_strings.append("0: Select All")
+
+        # Add the new scan filenames to the list
+        for i, scan in enumerate(available_scans, start=1):
+            scan_strings.append(f"{i}: {scan.filename}")
         
         # Join the list of strings into a single string
         output_text = "\n".join(scan_strings)
@@ -171,9 +183,9 @@ def find_scans():
         # Create a label to indicate the format of the output
         format_label = customtkinter.CTkLabel(master=output_frame, text="Index: File Name", wraplength=600)
         format_label.grid(row=0, column=1, padx=10, pady=10)
-        
+
         # Display the output_text
-        output_label = customtkinter.CTkLabel(master=output_frame, text=output_text, wraplength=600)
+        output_label.configure(text=output_text)
         output_label.grid(row=1, column=1, padx=10, pady=10)
         
         # Create a text box for the user to input the indexes
@@ -184,7 +196,7 @@ def find_scans():
         download_button = customtkinter.CTkButton(master=output_frame_2, text="Download Selected Scans", command=lambda: start_download_thread(index_input.get(), available_scans))
         download_button.grid(row=2, column=1, padx=10, pady=10)
     else:
-        output_label = customtkinter.CTkLabel(master=output_frame, text="No available scans found for the selected criteria.", wraplength=600)
+        output_label.configure(text="No available scans found for the selected criteria.")
         output_label.grid(row=0, column=1, padx=10, pady=10)
 
 def start_download():
@@ -229,6 +241,7 @@ def download_scans(indexes, available_scans):
 
 def download_complete(event, total_scans):
     if event.is_set():
+        output_label.configure(text="")
         progress_bar.stop()
         progress_bar.grid_remove()
         status_label = customtkinter.CTkLabel(master=status_frame, text="Download Complete!")
@@ -303,12 +316,12 @@ find_scans_button.grid(row=6, column=0, columnspan=3, padx=50, pady=10)
 
 # Output Frame
 output_label = customtkinter.CTkLabel(master=output_frame, text="", wraplength=600)
+output_label.grid(row=1, column=0, padx=10, pady=10)
 
 progress_bar = customtkinter.CTkProgressBar(master=status_frame, determinate_speed=0.5)
 
 status_label = customtkinter.CTkLabel(master=output_frame)
 
 status_label_2 = customtkinter.CTkLabel(master=output_frame)
-
 
 root.mainloop()
