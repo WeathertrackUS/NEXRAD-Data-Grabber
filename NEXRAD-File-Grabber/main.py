@@ -160,9 +160,9 @@ class NexradDownloader:
         Returns:
             list: A list of available scans for the specified radar site and time range.
         """
-        log.info(f'Searching for NEXRAD scans for {radar} from {start} to {end}')
+        log.info(f'Searching for NEXRAD scans for {radar} from {start} to {end}')  # skipcq: PYL-W1203
         scan_list = self.conn.get_avail_scans_in_range(start, end, radar)
-        log.info(f'Scan List: {scan_list}')
+        log.info('Scan List: ' + scan_list)
         return scan_list
 
 
@@ -211,22 +211,22 @@ class NexradDownloader:
             If the download is complete, it calls the download_complete_callback.
             Otherwise, it calls the progress_callback and introduces a delay before the next download.
         """
-        log.info(f'Downloading NEXRAD scan: {scan.filename}')
+        log.info(f'Downloading NEXRAD scan: {scan.filename}')  # skipcq: PYL-W1203
         self.conn.download(scan, self.path)
         log.info('Download Complete')
-        log.info(f'File can be found at: {self.path}')
+        log.info(f'File can be found at: {self.path}')  # skipcq: PYL-W1203
         self.completed_downloads += 1
         self.download_progress = self.completed_downloads / self.total_downloads
 
         if self.completed_downloads == self.total_downloads:
-            log.info(f"completed scans {self.completed_downloads}/{self.total_downloads}")
-            log.info(f"Download progress: {self.download_progress * 100:.2f}%")
-            print(f"completed scans {self.completed_downloads}/{self.total_downloads}")
-            print(f"Download progress: {self.download_progress * 100:.2f}%")
+            log.info(f'Download Complete. Completed Scans: {self.completed_downloads}')  # skipcq: PYL-W1203
+            log.info(f'Download progress: {self.download_progress * 100:.2f}%')  # skipcq: PYL-W1203
+            print(f'completed scans {self.completed_downloads}/{self.total_downloads}')
+            print(f'Download progress: {self.download_progress * 100:.2f}%')
             self.download_event.set()
             self.download_complete_callback(self.download_event, self.total_downloads)
         else:
-            log.info(f"completed scans {self.completed_downloads}/{self.total_downloads}")
+            log.info(f"completed scans {self.completed_downloads}/{self.total_downloads}")  # skipcq: PYL-W1203
             print(f"completed scans {self.completed_downloads}/{self.total_downloads}")
             print(f"Download progress: {self.download_progress * 100:.2f}%")
             # Introduce a delay of 2 seconds before the next download
