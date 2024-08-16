@@ -92,7 +92,6 @@ def update_months():
     Returns:
         None
     """
-    global month_dropdown
     year = year_dropdown.get()
     month_dropdown['values'] = []  # skipcq: PYL-E0601
     available_months = questions.get_available_months(year)
@@ -118,7 +117,6 @@ def update_days():
     Returns:
         None
     """
-    global day_dropdown
     year = year_dropdown.get()
     month = month_dropdown.get()
     day_dropdown['values'] = []  # skipcq: PYL-E0601
@@ -144,7 +142,6 @@ def update_radars():
     Returns:
         None
     """
-    global radar_dropdown
     year = year_dropdown.get()
     month = month_dropdown.get()
     day = day_dropdown.get()
@@ -186,7 +183,6 @@ def time_range_selection():
     Returns:
         None
     """
-    global start_time_dropdown, end_time_dropdown
     time_list = generate_time_list()
     start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Start Time'])
     CTkScrollableDropdown(start_time_dropdown, values=time_list)

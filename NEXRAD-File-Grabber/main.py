@@ -215,7 +215,7 @@ class NexradDownloader:
         log.info('Download Complete')
         log.info(f'File can be found at: {self.path}')  # skipcq: PYL-W1203
         self.completed_downloads += 1
-        self.download_progress = self.completed_downloads / self.total_downloads
+        self.download_progress = self.completed_downloads / self.total_downloads  # skipcq: PYL-W0201
 
         if self.completed_downloads == self.total_downloads:
             log.info(f'Download Complete. Completed Scans: {self.completed_downloads}')  # skipcq: PYL-W1203
