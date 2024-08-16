@@ -27,7 +27,7 @@ There are two ways to run this program. The first is to use the executable file 
 2. Source Code:
     1. Clone this repository or download the source code.
     2. Install the required packages:
-        pip install -r requirements.txt
+        pip install -r requirements.txt  &  [CTkScrollableDropdown](https://github.com/Akascape/CTkScrollableDropdown)           
 
 ## Usage
 
@@ -50,7 +50,7 @@ There are two ways to run this program. The first is to use the executable file 
 
 ## License
 
-This project is licensed under the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication. For more details, see [https://creativecommons.org/publicdomain/zero/1.0/](https://creativecommons.org/publicdomain/zero/1.0/)
+This project is licensed under the CC0 1.0 Universal (CC0 1.0) Public Domain Dedication. For more details, see [Creative Commons CC0 1.0 Universal](https://creativecommons.org/publicdomain/zero/1.0/)
 
 ## Contributing
 
