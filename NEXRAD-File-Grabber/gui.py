@@ -8,8 +8,13 @@ The GUI consists of two frames: an input frame and an output frame. The input fr
 The application is initialized with the CustomTkinter appearance mode set to "System" and the default color theme set to "blue". The main window is set to a size of 800x600 pixels and titled "NEXRAD Downloader".
 """
 # NEXRAD File Grabber Frontend
-import customtkinter, tkinter as ttk, logging as log, datetime, time, threading, main, os, concurrent.futures
-from CTkScrollableDropdown import *
+import customtkinter
+import logging as log
+import datetime
+import threading
+import main
+import os
+import CTkScrollableDropdown
 
 log_directory = 'C:\\log'
 
@@ -23,7 +28,17 @@ log.basicConfig(
     filemode='w'
 )
 
+
 def update_download_path(path):
+    """
+    Updates the download path with the provided path.
+
+    Parameters:
+        path (str): The new download path.
+
+    Returns:
+        None
+    """
     # This function will be called with the new download path
     # You can update the GUI or perform other actions here
     print(f"Download path set to: {path}")
@@ -63,7 +78,21 @@ status_frame.grid(row=3, column=0, pady=10, padx=10, columnspan=2)
 
 # Functions
 
+
 def update_months():
+    """
+    Updates the month dropdown menu based on the selected year.
+
+    Retrieves the currently selected year from the year dropdown menu,
+    clears the current month dropdown values, and populates it with available months for the selected year.
+    The month dropdown menu is then updated and rearranged in the input frame.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     global month_dropdown
     year = year_dropdown.get()
     month_dropdown['values'] = [] # Clear the current values
@@ -74,7 +103,22 @@ def update_months():
     month_dropdown.grid(row=1, column=1, padx=10, pady=10)
     month_button.grid(row=1, column=2, padx=10, pady=10)
 
+
 def update_days():
+    """
+    Updates the day dropdown menu based on the selected year and month.
+
+    Retrieves the currently selected year and month from the respective dropdown menus,
+    clears the current day dropdown values, and populates it with available days for the
+    selected year and month. The day dropdown menu is then updated and rearranged in the
+    input frame.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     global day_dropdown
     year = year_dropdown.get()
     month = month_dropdown.get()
@@ -86,7 +130,21 @@ def update_days():
     day_dropdown.grid(row=2, column=1, padx=10, pady=10)
     day_buttion.grid(row=2, column=2, padx=10, pady=10)
 
+
 def update_radars():
+    """
+    Updates the list of available radar sites based on the selected year, month, and day.
+
+    Retrieves the currently selected year, month, and day from the corresponding dropdown menus.
+    Clears the current list of radar sites and populates it with the available radar sites for the selected date.
+    Updates the radar site dropdown menu with the new list of available radar sites.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     global radar_dropdown
     year = year_dropdown.get()
     month = month_dropdown.get()
@@ -99,8 +157,14 @@ def update_radars():
     radar_dropdown.grid(row=3, column=1, padx=10, pady=10)
     radar_button.grid(row=3, column=2, padx=10, pady=10)
 
+
 def generate_time_list():
-    """Generate a list of times in the format 'HHMM' every 15 minutes from 0000 to 2345."""
+    """
+    Generate a list of times in the format 'HHMM' every 15 minutes from 0000 to 2345.
+
+    Returns:
+        list: A list of strings representing the times in the format 'HHMM'.
+    """
     time_list = []
     for hour in range(24):
         for minute in range(0, 60, 15): # Start at 0, end at 60, step by 15
@@ -108,7 +172,21 @@ def generate_time_list():
     time_list.append('2359')
     return time_list
 
+
 def time_range_selection():
+    """
+    Selects a time range by creating dropdown menus for start and end times.
+
+    Retrieves a list of available times from the generate_time_list function.
+    Creates dropdown menus for selecting the start and end times, and populates them with the available times.
+    Arranges the dropdown menus and their corresponding labels in the input frame.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     global start_time_dropdown, end_time_dropdown
     time_list = generate_time_list()
     start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Start Time'])
@@ -120,7 +198,24 @@ def time_range_selection():
     end_time_label.grid(row=5, column=0, padx=10, pady=10)
     end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
+
 def find_scans():
+    """
+    Finds scans based on the selected year, month, day, start time, end time, and radar site.
+
+    Retrieves the selected values from the dropdown menus and checks if all required fields are filled.
+    If any field is empty, displays an error message and returns.
+
+    If all fields are filled, creates a datetime object for the start and end times and uses the downloader to find available scans.
+    If scans are found, generates a list of scan filenames and displays them in the output label.
+    If no scans are found, displays a message indicating that no scans were found.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     output_label.grid_remove()
     output_label.grid_forget()
 
@@ -199,21 +294,63 @@ def find_scans():
         output_label.configure(text="No available scans found for the selected criteria.")
         output_label.grid(row=0, column=1, padx=10, pady=10)
 
+
 def start_download():
+    """
+    Starts the download process by resetting the progress bar and updating the status label.
+
+    This function does not take any parameters and does not return any values.
+    """
     status_label_2.grid_remove() 
     progress_bar.set(0)
     status_label = customtkinter.CTkLabel(master=status_frame, text="Downloading Files...")
     status_label.grid(row=0, column=0, padx=10, pady=10)
     progress_bar.grid(row=2, column=0, padx=10, pady=10)
 
+
 def update_progress_bar(progress):
+    """
+    Updates the progress bar with the given progress value.
+
+    Args:
+        progress (int): The progress value to be set on the progress bar.
+
+    Returns:
+        None
+    """
     progress_bar.set(progress)
 
+
 def start_download_thread(indexes, available_scans):
+    """
+    Starts a new thread to download the selected scans.
+
+    Parameters:
+        indexes (str): A string of comma-separated integers representing the indexes of the scans to download.
+        available_scans (list): A list of available scans.
+
+    Returns:
+        None
+    """
     download_thread = threading.Thread(target=download_scans, args=(indexes, available_scans))
     download_thread.start()
 
+
 def download_scans(indexes, available_scans):
+    """
+    Downloads the selected scans from the available scans.
+
+    Args:
+        indexes (str): A string of comma-separated integers representing the indexes of the scans to be downloaded.
+        available_scans (List[Scan]): A list of available scans.
+
+    Returns:
+        None
+
+    Raises:
+        None
+
+    """
     log.info('Starting Download')
     start_download()
 
@@ -239,7 +376,21 @@ def download_scans(indexes, available_scans):
         status_label.grid(row=0, column=0, padx=10, pady=10)
         log.error('Selected Scans is None')
 
+
 def download_complete(event, total_scans):
+    """
+    Handles the completion of a download event.
+
+    Args:
+        event: The download event object.
+        total_scans: The total number of scans downloaded.
+
+    Returns:
+        None
+
+    Raises:
+        None
+    """
     if event.is_set():
         output_label.configure(text="")
         progress_bar.stop()
@@ -249,6 +400,7 @@ def download_complete(event, total_scans):
         status_label.grid(row=0, column=0, padx=10, pady=10)
         status_label_2.grid(row=1, column=0, padx=10, pady=10)
 
+
 # Path Frame
 # Output Path Selection
 output_path_label = customtkinter.CTkLabel(master=path_frame, text="Output Path:")
@@ -257,14 +409,28 @@ output_path_label.grid(row=0, column=0, padx=10, pady=10)
 output_path_entry = customtkinter.CTkEntry(master=path_frame)
 output_path_entry.grid(row=0, column=1, padx=10, pady=10)
 
+
 # Browse Button for Output Path
 def browse_output_path():
+    """
+    Opens a file dialog for the user to select an output path.
+
+    This function uses tkinter's filedialog to prompt the user to select a directory.
+    If a path is selected, it updates the output path entry field and sets the download path for the downloader.
+
+    Parameters:
+        None
+
+    Returns:
+        None
+    """
     from tkinter import filedialog
     path = filedialog.askdirectory()
     if path:
         output_path_entry.delete(0, 'end')
         output_path_entry.insert(0, path)
         downloader.set_download_path(path) # Update the download path
+
 
 browse_button = customtkinter.CTkButton(master=path_frame, text="Browse", command=browse_output_path)
 browse_button.grid(row=0, column=2, padx=10, pady=10)

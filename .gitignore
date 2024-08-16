@@ -159,8 +159,4 @@ cython_debug/
 # venv
 /nexrad
 
-LICENSE.txt 
-README.txt
-
-/CTkScrollableDropdown-main
-/CTkScrollableDropdown
+/ignore
