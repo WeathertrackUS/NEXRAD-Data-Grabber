@@ -54,7 +54,6 @@ root = customtkinter.CTk()
 root.geometry("540x800")
 root.title("NEXRAD Downloader")
 
-available_months = []
 selection_text = ['Select Year First', 'Select Month First', 'Select Day First', 'Select Radar Site First']
 
 # Create a global event object
@@ -95,7 +94,7 @@ def update_months():
     """
     global month_dropdown
     year = year_dropdown.get()
-    month_dropdown['values'] = [] # Clear the current values
+    month_dropdown['values'] = []  # skipcq: PYL-E0601
     available_months = questions.get_available_months(year)
     month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Month'] + available_months)
     CTkScrollableDropdown(month_dropdown, values=available_months)
@@ -122,7 +121,7 @@ def update_days():
     global day_dropdown
     year = year_dropdown.get()
     month = month_dropdown.get()
-    day_dropdown['values'] = [] # Clear the current values
+    day_dropdown['values'] = []  # skipcq: PYL-E0601
     available_days = questions.get_available_days(year, month)
     day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Day'] + available_days)
     CTkScrollableDropdown(day_dropdown, values=available_days)
@@ -149,7 +148,7 @@ def update_radars():
     year = year_dropdown.get()
     month = month_dropdown.get()
     day = day_dropdown.get()
-    radar_dropdown['values'] = [] # Clear the current values
+    radar_dropdown['values'] = []  # skipcq: PYL-E0601
     available_radars = questions.get_available_radars(year, month, day)
     radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar Site'] + available_radars)
     CTkScrollableDropdown(radar_dropdown, values=available_radars)
@@ -228,27 +227,27 @@ def find_scans():
 
     if not year:
         log.error(selection_text[0])
-        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[0])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[0])  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not month:
         log.error(selection_text[1])
-        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[1])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[1])  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not day:
         log.error(selection_text[2])
-        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[2])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[2])  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not radar_site:
         log.error(selection_text[3])
-        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[3])
+        status_label = customtkinter.CTkLabel(master=status_frame, text=selection_text[3])  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         return
     elif not start_time or not end_time:
         log.error("Select Start/ End Time First")
-        status_label = customtkinter.CTkLabel(master=status_frame, text="Select Start/ End Time First")
+        status_label = customtkinter.CTkLabel(master=status_frame, text="Select Start/ End Time First")  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         return
 
@@ -303,7 +302,7 @@ def start_download():
     """
     status_label_2.grid_remove() 
     progress_bar.set(0)
-    status_label = customtkinter.CTkLabel(master=status_frame, text="Downloading Files...")
+    status_label = customtkinter.CTkLabel(master=status_frame, text="Downloading Files...")  # skipcq: PYL-W0621
     status_label.grid(row=0, column=0, padx=10, pady=10)
     progress_bar.grid(row=2, column=0, padx=10, pady=10)
 
@@ -372,7 +371,7 @@ def download_scans(indexes, available_scans):
         total_scans = len(selected_scans)
         downloader.download_scans(selected_scans, download_event, download_complete, total_scans, update_progress_bar)
     else:
-        status_label = customtkinter.CTkLabel(master=status_frame, text="ERROR: selected_scans is empty")
+        status_label = customtkinter.CTkLabel(master=status_frame, text="ERROR: selected_scans is empty")  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         log.error('Selected Scans is None')
 
@@ -395,8 +394,8 @@ def download_complete(event, total_scans):
         output_label.configure(text="")
         progress_bar.stop()
         progress_bar.grid_remove()
-        status_label = customtkinter.CTkLabel(master=status_frame, text="Download Complete!")
-        status_label_2 = customtkinter.CTkLabel(master=status_frame, text=f"Completed {total_scans} downloads")
+        status_label = customtkinter.CTkLabel(master=status_frame, text="Download Complete!")  # skipcq: PYL-W0621
+        status_label_2 = customtkinter.CTkLabel(master=status_frame, text=f"Completed {total_scans} downloads")  # skipcq: PYL-W0621
         status_label.grid(row=0, column=0, padx=10, pady=10)
         status_label_2.grid(row=1, column=0, padx=10, pady=10)
 

@@ -186,9 +186,8 @@ class NexradDownloader:
         self.download_complete_callback = download_complete_callback
         self.progress_callback = progress_callback
 
-        if self.path == os.path.dirname(os.path.abspath(__file__)):
-            if not os.path.exists(self.path):
-                os.makedirs(self.path)
+        if self.path == os.path.dirname(os.path.abspath(__file__)) and not os.path.exists(self.path):
+            os.makedirs(self.path)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
             futures = [executor.submit(self._download_scan, scan) for scan in scans]
