@@ -430,7 +430,6 @@ def browse_output_path():
         output_path_entry.insert(0, path)
         downloader.set_download_path(path) # Update the download path
 
-
 browse_button = customtkinter.CTkButton(master=path_frame, text="Browse", command=browse_output_path)
 browse_button.grid(row=0, column=2, padx=10, pady=10)
     
@@ -441,28 +440,28 @@ year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Ye
 CTkScrollableDropdown.CTkScrollableDropdown(year_dropdown, values=questions.get_available_years())
 year_dropdown.grid(row=0, column=1, padx=10, pady=10)
 
-year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=update_months()) 
+year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=lambda: update_months()) 
 year_button.grid(row=0, column=2, padx=10, pady=10)
 
 month_label = customtkinter.CTkLabel(master=input_frame, text="Select Month:")
 month_label.grid(row=1, column=0, padx=10, pady=10)
 month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Year First"]) 
 month_dropdown.grid(row=1, column=1, padx=10, pady=10)
-month_button = customtkinter.CTkButton(master=input_frame, text="Select Month", command=update_days()) 
+month_button = customtkinter.CTkButton(master=input_frame, text="Select Month", command=lambda: update_days()) 
 month_button.grid(row=1, column=2, padx=10, pady=10)
 
 day_label = customtkinter.CTkLabel(master=input_frame, text="Select Day:")
 day_label.grid(row=2, column=0, padx=10, pady=10)
 day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Month First"]) 
 day_dropdown.grid(row=2, column=1, padx=10, pady=10)
-day_buttion = customtkinter.CTkButton(master=input_frame, text="Select Day", command=update_radars()) 
+day_buttion = customtkinter.CTkButton(master=input_frame, text="Select Day", command=lambda: update_radars()) 
 day_buttion.grid(row=2, column=2, padx=10, pady=10)
 
 radar_label = customtkinter.CTkLabel(master=input_frame, text="Select Radar:")
 radar_label.grid(row=3, column=0, padx=10, pady=10)
 radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=["Select Day First"]) 
 radar_dropdown.grid(row=3, column=1, padx=10, pady=10)
-radar_button = customtkinter.CTkButton(master=input_frame, text="Select Radar", command=time_range_selection()) 
+radar_button = customtkinter.CTkButton(master=input_frame, text="Select Radar", command=lambda: time_range_selection()) 
 radar_button.grid(row=3, column=2, padx=10, pady=10)
 
 start_time_label = customtkinter.CTkLabel(master=input_frame, text="Start Time:")
@@ -475,7 +474,7 @@ end_time_label.grid(row=5, column=0, padx=10, pady=10)
 end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar First']) 
 end_time_dropdown.grid(row=5, column=1, padx=10, pady=10)
 
-find_scans_button = customtkinter.CTkButton(master=input_frame, text="Find Scans", command=find_scans()) 
+find_scans_button = customtkinter.CTkButton(master=input_frame, text="Find Scans", command=lambda: find_scans()) 
 find_scans_button.grid(row=6, column=0, columnspan=3, padx=50, pady=10)
 
 
