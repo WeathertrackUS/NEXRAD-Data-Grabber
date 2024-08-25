@@ -37,6 +37,7 @@ class Question:
         get_available_months(year): Returns a list of available months for a given year.
         get_available_days(year, month): Returns a list of available days for a given year and month.
     """
+    
     def __init__(self):
         """
         Initializes a Question instance.
@@ -137,6 +138,7 @@ class NexradDownloader:
         __init__(set_path_callback): Initializes a NexradDownloader instance.
         set_download_path(output_path): Sets the download path for the NexradDownloader instance.
     """
+
     def __init__(self, set_path_callback):
         """
         Initializes a NexradDownloader instance.
