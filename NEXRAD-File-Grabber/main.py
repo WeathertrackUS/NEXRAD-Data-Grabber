@@ -26,6 +26,17 @@ log.basicConfig(
 
 
 class Question:
+    """
+    A class representing a question about available NEXRAD data.
+
+    Attributes:
+        conn (object): A connection object used to retrieve available data.
+
+    Methods:
+        get_available_years(): Returns a list of available years.
+        get_available_months(year): Returns a list of available months for a given year.
+        get_available_days(year, month): Returns a list of available days for a given year and month.
+    """
     def __init__(self):
         """
         Initializes a Question instance.
@@ -37,7 +48,6 @@ class Question:
             None
         """
         self.conn = conn
-
 
     def get_available_years(self):
         """
@@ -51,7 +61,6 @@ class Question:
         """
         return self.conn.get_avail_years()
 
-
     def get_available_months(self, year):
         """
         Returns a list of available months for a given year.
@@ -63,7 +72,6 @@ class Question:
             list: A list of available months.
         """
         return self.conn.get_avail_months(year)
-
 
     def get_available_days(self, year, month):
         """
@@ -77,7 +85,6 @@ class Question:
             list: A list of available days.
         """
         return self.conn.get_avail_days(year, month)
-
 
     def get_available_radars(self, year, month, day):
         """
@@ -93,7 +100,6 @@ class Question:
         """
         return self.conn.get_avail_radars(year, month, day)
 
-
     @staticmethod
     def get_time_range(year, month, day):
         """
@@ -105,7 +111,8 @@ class Question:
             day (int): The day of the date.
 
         Returns:
-            tuple: A tuple containing two datetime objects. The first is the start of the day (00:00:00) and the second is the end of the day (23:59:59).
+            tuple: A tuple containing two datetime objects.
+            The first is the start of the day (00:00:00) and the second is the end of the day (23:59:59).
         """
         start = datetime.datetime(int(year), int(month), int(day), 0, 0, 0)
         end = datetime.datetime(int(year), int(month), int(day), 23, 59, 59)
@@ -113,6 +120,23 @@ class Question:
 
 
 class NexradDownloader:
+    """
+    A class responsible for downloading NEXRAD data.
+
+    Attributes:
+        progress_callback (function): A callback function to report download progress.
+        download_complete_callback (function): A callback function to notify when download is complete.
+        download_event (object): An event object to signal download completion.
+        total_downloads (int): The total number of downloads.
+        completed_downloads (int): The number of completed downloads.
+        conn (object): A connection object used to retrieve data.
+        path (str): The download path for the NEXRAD data.
+        set_path_callback (function): A callback function to be called when the download path is set.
+
+    Methods:
+        __init__(set_path_callback): Initializes a NexradDownloader instance.
+        set_download_path(output_path): Sets the download path for the NexradDownloader instance.
+    """
     def __init__(self, set_path_callback):
         """
         Initializes a NexradDownloader instance.
@@ -132,7 +156,6 @@ class NexradDownloader:
         self.path = path  # Initialize path as None
         self.set_path_callback = set_path_callback  # Store the callback
 
-
     def set_download_path(self, output_path):
         """
         Sets the download path for the NexradDownloader instance.
@@ -146,7 +169,6 @@ class NexradDownloader:
         self.path = output_path  # Set the download path
         if self.set_path_callback:
             self.set_path_callback(path)  # Call the callback with the new path
-
 
     def find_scans(self, start, end, radar):
         """
@@ -162,9 +184,8 @@ class NexradDownloader:
         """
         log.info(f'Searching for NEXRAD scans for {radar} from {start} to {end}')  # skipcq: PYL-W1203
         scan_list = self.conn.get_avail_scans_in_range(start, end, radar)
-        log.info(f'Scan List: {scan_list}')
+        log.info(f'Scan List: {scan_list}')  # skipcq: PYL-W1203
         return scan_list
-
 
     def download_scans(self, scans, download_event, download_complete_callback, total_downloads, progress_callback):
         """
@@ -193,7 +214,6 @@ class NexradDownloader:
             futures = [executor.submit(self.download_scan, scan) for scan in scans]
             for future in concurrent.futures.as_completed(futures):
                 future.result()
-
 
     def download_scan(self, scan):
         """
