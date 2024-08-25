@@ -438,7 +438,7 @@ browse_button.grid(row=0, column=2, padx=10, pady=10)
 year_label = customtkinter.CTkLabel(master=input_frame, text="Select Year:")
 year_label.grid(row=0, column=0, padx=10, pady=10)
 year_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Year'] + questions.get_available_years())
-CTkScrollableDropdown(year_dropdown, values=questions.get_available_years())
+CTkScrollableDropdown.CTkScrollableDropdown(year_dropdown, values=questions.get_available_years())
 year_dropdown.grid(row=0, column=1, padx=10, pady=10)
 
 year_button = customtkinter.CTkButton(master=input_frame, text="Select Year", command=update_months()) 

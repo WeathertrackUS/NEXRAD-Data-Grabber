@@ -160,4 +160,4 @@ cython_debug/
 /nexrad
 
 /ignore
-/CTkScrollableDropdown
+NEXRAD-File-Grabber/CTkScrollableDropdown
