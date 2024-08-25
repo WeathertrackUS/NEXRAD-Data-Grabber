@@ -190,7 +190,7 @@ class NexradDownloader:
             os.makedirs(self.path)
 
         with concurrent.futures.ThreadPoolExecutor(max_workers=3) as executor:
-            futures = [executor.submit(self._download_scan, scan) for scan in scans]
+            futures = [executor.submit(self.download_scan, scan) for scan in scans]
             for future in concurrent.futures.as_completed(futures):
                 future.result()
 
