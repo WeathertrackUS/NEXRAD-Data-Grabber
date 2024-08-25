@@ -162,7 +162,7 @@ class NexradDownloader:
         """
         log.info(f'Searching for NEXRAD scans for {radar} from {start} to {end}')  # skipcq: PYL-W1203
         scan_list = self.conn.get_avail_scans_in_range(start, end, radar)
-        log.info('Scan List: ' + scan_list)
+        log.info(f'Scan List: {scan_list}')
         return scan_list
 
 

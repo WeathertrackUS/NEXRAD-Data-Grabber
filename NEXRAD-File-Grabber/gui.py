@@ -97,7 +97,7 @@ def update_months():
     month_dropdown['values'] = []  # skipcq: PYL-E0601
     available_months = questions.get_available_months(year)
     month_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Month'] + available_months)
-    CTkScrollableDropdown(month_dropdown, values=available_months)
+    CTkScrollableDropdown.CTkScrollableDropdown(month_dropdown, values=available_months)
     month_label.grid(row=1, column=0, padx=10, pady=10)
     month_dropdown.grid(row=1, column=1, padx=10, pady=10)
     month_button.grid(row=1, column=2, padx=10, pady=10)
@@ -124,7 +124,7 @@ def update_days():
     day_dropdown['values'] = []  # skipcq: PYL-E0601
     available_days = questions.get_available_days(year, month)
     day_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Day'] + available_days)
-    CTkScrollableDropdown(day_dropdown, values=available_days)
+    CTkScrollableDropdown.CTkScrollableDropdown(day_dropdown, values=available_days)
     day_label.grid(row=2, column=0, padx=10, pady=10)
     day_dropdown.grid(row=2, column=1, padx=10, pady=10)
     day_buttion.grid(row=2, column=2, padx=10, pady=10)
@@ -151,7 +151,7 @@ def update_radars():
     radar_dropdown['values'] = []  # skipcq: PYL-E0601
     available_radars = questions.get_available_radars(year, month, day)
     radar_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Radar Site'] + available_radars)
-    CTkScrollableDropdown(radar_dropdown, values=available_radars)
+    CTkScrollableDropdown.CTkScrollableDropdown(radar_dropdown, values=available_radars)
     radar_label.grid(row=3, column=0, padx=10, pady=10)
     radar_dropdown.grid(row=3, column=1, padx=10, pady=10)
     radar_button.grid(row=3, column=2, padx=10, pady=10)
@@ -189,9 +189,9 @@ def time_range_selection():
     global start_time_dropdown, end_time_dropdown  # skipcq: PYL-W0603
     time_list = generate_time_list()
     start_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select Start Time'])
-    CTkScrollableDropdown(start_time_dropdown, values=time_list)
+    CTkScrollableDropdown.CTkScrollableDropdown(start_time_dropdown, values=time_list)
     end_time_dropdown = customtkinter.CTkComboBox(master=input_frame, values=['Select End Time'])
-    CTkScrollableDropdown(end_time_dropdown, values=time_list)
+    CTkScrollableDropdown.CTkScrollableDropdown(end_time_dropdown, values=time_list)
     start_time_label.grid(row=4, column=0, padx=10, pady=10)
     start_time_dropdown.grid(row=4, column=1, padx=10, pady=10)
     end_time_label.grid(row=5, column=0, padx=10, pady=10)
