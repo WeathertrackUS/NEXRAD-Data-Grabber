@@ -37,7 +37,7 @@ class Question:
         get_available_months(year): Returns a list of available months for a given year.
         get_available_days(year, month): Returns a list of available days for a given year and month.
     """
-    
+
     def __init__(self):
         """
         Initializes a Question instance.
