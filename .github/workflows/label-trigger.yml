@@ -1,0 +1,38 @@
+name: PR Label Trigger
+
+on:
+  pull_request:
+    types:
+      - labeled
+      - unlabeled
+
+permissions:
+  pull-requests: write
+
+jobs:
+  label_actions:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Check out repository
+      uses: actions/checkout@v4
+
+    - name: Send message on label addition
+      if: github.event.action == 'labeled' && github.event.label.name == 'halt-rabbit-review'
+      run: |
+        if ! gh pr comment ${{ github.event.pull_request.number }} --body "@coderabbitai pause"; then
+          echo "Failed to comment on PR"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+    - name: Send message on label removal
+      if: github.event.action == 'unlabeled' && github.event.label.name == 'halt-rabbit-review'
+      run: |
+        if ! gh pr comment ${{ github.event.pull_request.number }} --body "@coderabbitai resume"; then
+          echo "Failed to comment on PR"
+          exit 1
+        fi
+      env:
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
